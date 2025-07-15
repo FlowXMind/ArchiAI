@@ -5,6 +5,8 @@ import { Skeleton } from './Skeleton';
 import { TabButton } from './TabButton';
 import { ChartBarIcon, DiagramIcon, DocumentTextIcon, LightBulbIcon, ShieldCheckIcon } from './icons/OutputIcons';
 import { CheckCircleIcon, XCircleIcon } from './icons/ProConIcons';
+import html2pdf from 'html2pdf.js';
+import { useRef } from 'react';
 
 interface ArchitectureOutputProps {
   data: ArchitectureResponse | null;
@@ -54,8 +56,31 @@ function formatArchitectureAsText(data: ArchitectureResponse): string {
   return txt;
 }
 
+// Helper to format architecture data as Markdown
+function formatArchitectureAsMarkdown(data: ArchitectureResponse): string {
+  let md = '';
+  md += `# Overview\n${data.overview}\n\n`;
+  md += `## Tech Stack\n`;
+  md += `- **Frontend:** ${data.techStack.frontend.join(', ')}\n`;
+  md += `- **Backend:** ${data.techStack.backend.join(', ')}\n`;
+  md += `- **Database:** ${data.techStack.database.join(', ')}\n`;
+  md += `- **DevOps:** ${data.techStack.devops.join(', ')}\n`;
+  if (data.techStack.messaging && data.techStack.messaging.length > 0) {
+    md += `- **Messaging:** ${data.techStack.messaging.join(', ')}\n`;
+  }
+  md += `\n## Pros\n`;
+  data.pros.forEach((pro, i) => { md += `- ${pro}\n`; });
+  md += `\n## Cons\n`;
+  data.cons.forEach((con, i) => { md += `- ${con}\n`; });
+  md += `\n## Scalability\n${data.scalability}\n\n`;
+  md += `## Security\n${data.security}\n\n`;
+  md += `## Mermaid Diagram\n\n\`\`\`mermaid\n${data.diagram}\`\`\`\n\n`;
+  return md;
+}
+
 export const ArchitectureOutput: React.FC<ArchitectureOutputProps> = ({ data, isLoading, error }) => {
   const [activeTab, setActiveTab] = useState<Tab>('Overview');
+  const pdfRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     if (data) {
@@ -152,7 +177,7 @@ export const ArchitectureOutput: React.FC<ArchitectureOutputProps> = ({ data, is
   return (
     <div className="bg-slate-800/30 backdrop-blur-xl border border-slate-700/60 rounded-2xl shadow-2xl shadow-slate-900/50 h-full flex flex-col">
       {data && (
-        <div className="flex justify-end p-4 pt-6">
+        <div className="flex justify-end p-4 pt-6 gap-2">
           <button
             onClick={handleExportTxt}
             className="px-4 py-2 text-sm font-semibold rounded-lg bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-sm hover:from-sky-600 hover:to-indigo-700 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed"
@@ -161,6 +186,93 @@ export const ArchitectureOutput: React.FC<ArchitectureOutputProps> = ({ data, is
           >
             Export as .txt
           </button>
+         <button
+           onClick={() => {
+             if (!data) return;
+             const md = formatArchitectureAsMarkdown(data);
+             const blob = new Blob([md], { type: 'text/markdown' });
+             const url = URL.createObjectURL(blob);
+             const a = document.createElement('a');
+             a.href = url;
+             a.download = 'architecture-plan.md';
+             document.body.appendChild(a);
+             a.click();
+             setTimeout(() => {
+               document.body.removeChild(a);
+               URL.revokeObjectURL(url);
+             }, 0);
+           }}
+           className="px-4 py-2 text-sm font-semibold rounded-lg bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-sm hover:from-sky-600 hover:to-indigo-700 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed"
+           aria-label="Export architecture as markdown file"
+           tabIndex={0}
+         >
+           Export as .md
+         </button>
+         {/*
+         <button
+           onClick={() => {
+             if (!data || !pdfRef.current) return;
+             setTimeout(() => {
+               html2pdf().set({
+                 margin: 0.5,
+                 filename: 'architecture-plan.pdf',
+                 html2canvas: { scale: 2 },
+                 jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+               }).from(pdfRef.current).save();
+             }, 100);
+           }}
+           className="px-4 py-2 text-sm font-semibold rounded-lg bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-sm hover:from-sky-600 hover:to-indigo-700 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed"
+           aria-label="Export architecture as PDF file"
+           tabIndex={0}
+         >
+           Export as PDF
+         </button>
+         */}
+        </div>
+      )}
+      {/* Hidden PDF template */}
+      {data && (
+        <div
+          ref={pdfRef}
+          style={{
+            opacity: 0,
+            pointerEvents: 'none',
+            position: 'fixed',
+            left: 0,
+            top: 0,
+            zIndex: -1,
+            width: 800,
+          }}
+        >
+          <div style={{fontFamily: 'Sora, Arial, sans-serif', color: '#222', padding: 24, maxWidth: 800}}>
+            <h1 style={{fontSize: 28, fontWeight: 700, marginBottom: 8}}>Software Architecture Plan</h1>
+            <h2 style={{fontSize: 20, fontWeight: 600, margin: '16px 0 4px'}}>Overview</h2>
+            <p style={{marginBottom: 12}}>{data.overview}</p>
+            <h2 style={{fontSize: 20, fontWeight: 600, margin: '16px 0 4px'}}>Tech Stack</h2>
+            <ul style={{marginBottom: 12}}>
+              <li><b>Frontend:</b> {data.techStack.frontend.join(', ')}</li>
+              <li><b>Backend:</b> {data.techStack.backend.join(', ')}</li>
+              <li><b>Database:</b> {data.techStack.database.join(', ')}</li>
+              <li><b>DevOps:</b> {data.techStack.devops.join(', ')}</li>
+              {data.techStack.messaging && data.techStack.messaging.length > 0 && (
+                <li><b>Messaging:</b> {data.techStack.messaging.join(', ')}</li>
+              )}
+            </ul>
+            <h2 style={{fontSize: 20, fontWeight: 600, margin: '16px 0 4px'}}>Pros</h2>
+            <ul style={{marginBottom: 12}}>
+              {data.pros.map((pro, i) => <li key={i}>• {pro}</li>)}
+            </ul>
+            <h2 style={{fontSize: 20, fontWeight: 600, margin: '16px 0 4px'}}>Cons</h2>
+            <ul style={{marginBottom: 12}}>
+              {data.cons.map((con, i) => <li key={i}>• {con}</li>)}
+            </ul>
+            <h2 style={{fontSize: 20, fontWeight: 600, margin: '16px 0 4px'}}>Scalability</h2>
+            <p style={{marginBottom: 12}}>{data.scalability}</p>
+            <h2 style={{fontSize: 20, fontWeight: 600, margin: '16px 0 4px'}}>Security</h2>
+            <p style={{marginBottom: 12}}>{data.security}</p>
+            <h2 style={{fontSize: 20, fontWeight: 600, margin: '16px 0 4px'}}>Mermaid Diagram</h2>
+            <pre style={{background: '#f4f4f4', padding: 12, borderRadius: 6, fontSize: 13, overflowX: 'auto'}}>{data.diagram}</pre>
+          </div>
         </div>
       )}
       <div className="flex border-b border-slate-700/60 px-2 sm:px-4 space-x-1 sm:space-x-2">
