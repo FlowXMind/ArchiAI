@@ -178,6 +178,7 @@ export const ArchitectureOutput: React.FC<ArchitectureOutputProps> = ({ data, is
     <div className="bg-slate-800/30 backdrop-blur-xl border border-slate-700/60 rounded-2xl shadow-2xl shadow-slate-900/50 h-full flex flex-col">
       {data && (
         <div className="flex justify-end p-4 pt-6 gap-2">
+          {/*
           <button
             onClick={handleExportTxt}
             className="px-4 py-2 text-sm font-semibold rounded-lg bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-sm hover:from-sky-600 hover:to-indigo-700 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed"
@@ -186,6 +187,7 @@ export const ArchitectureOutput: React.FC<ArchitectureOutputProps> = ({ data, is
           >
             Export as .txt
           </button>
+          */}
          <button
            onClick={() => {
              if (!data) return;
