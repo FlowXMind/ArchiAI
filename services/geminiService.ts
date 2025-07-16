@@ -1,9 +1,9 @@
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 import { ArchitectureData } from '../types';
 
-const apiKey = process.env.REACT_APP_GEMINI_API_KEY;
+const apiKey = process.env.GEMINI_API_KEY;
 if (!apiKey) {
-    throw new Error("REACT_APP_GEMINI_API_KEY is not set in the environment variables.");
+    throw new Error("GEMINI_API_KEY is not set in the environment variables.");
 }
 
 const genAI = new GoogleGenerativeAI(apiKey);

@@ -90,7 +90,7 @@ const App: React.FC = () => {
           </div>
         )}
       </main>
-      <Footer />
+      {!isLoading && <Footer />}
     </div>
   );
 };
