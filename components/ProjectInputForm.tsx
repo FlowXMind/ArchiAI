@@ -24,9 +24,20 @@ const ProjectInputForm: React.FC<ProjectInputFormProps> = ({ onGenerate }) => {
 
   return (
     <div className="max-w-4xl mx-auto my-12 text-center">
-      <h1 className="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 mb-4 tracking-tight">
+      <h1 className="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 mb-4 tracking-tight animate-gradient-text">
         ArchiAi
       </h1>
+      <style>{`
+        @keyframes animate-gradient-text {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .animate-gradient-text {
+          background-size: 200% auto;
+          animation: animate-gradient-text 5s ease-in-out infinite;
+        }
+      `}</style>
       <p className="text-lg md:text-xl text-gray-400 mb-10">
         Turn your idea into a launch-ready plan. Describe your vision and get a detailed architecture, PRD, and roadmap in seconds.
       </p>
@@ -35,14 +46,15 @@ const ProjectInputForm: React.FC<ProjectInputFormProps> = ({ onGenerate }) => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="e.g., A mobile app that uses AI to identify plants from photos, with a community forum for gardening enthusiasts..."
-          className="w-full h-40 p-4 bg-gray-950 border border-gray-700 rounded-lg text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 resize-none placeholder-gray-500"
+          className="w-full h-40 p-4 bg-gray-950 border border-gray-700 rounded-lg text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 resize-none placeholder-gray-500 focus:shadow-outline-blue"
         />
         <button
           type="submit"
-          className="mt-6 w-full sm:w-auto px-12 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold text-lg rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed disabled:scale-100"
+          className="mt-6 w-full sm:w-auto px-12 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold text-lg rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed disabled:scale-100 group relative overflow-hidden"
           disabled={!description.trim()}
         >
-          Generate Plan
+          <span className="relative z-10">Generate Plan</span>
+          <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
         </button>
       </form>
        <div className="mt-8">

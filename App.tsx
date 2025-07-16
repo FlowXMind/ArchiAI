@@ -8,6 +8,7 @@ import Loader from './components/common/Loader';
 import Header from './components/Header';
 import Nav from './components/Nav';
 import Footer from './components/Footer';
+import BackgroundAnimation from './components/common/BackgroundAnimation';
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -54,9 +55,10 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className={`min-h-screen bg-black text-gray-200 transition-opacity duration-1000 flex flex-col ${isMounted ? 'opacity-100' : 'opacity-0'}`}>
+    <div className={`min-h-screen bg-black text-gray-200 transition-opacity duration-1000 flex flex-col relative ${isMounted ? 'opacity-100' : 'opacity-0'}`}>
+      <BackgroundAnimation />
       <Header onReset={resetApp} hasData={!!apiResponse} />
-      <main className="w-full flex-grow p-4 sm:p-6 lg:p-8 max-w-8xl mx-auto">
+      <main className="relative z-10 w-full flex-grow p-4 sm:p-6 lg:p-8 max-w-8xl mx-auto">
         {!apiResponse && !isLoading && !error && (
           <ProjectInputForm onGenerate={handleGenerate} />
         )}
