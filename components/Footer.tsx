@@ -10,11 +10,10 @@ const InfoIcon = ({ className = "h-5 w-5" }) => (
 );
 
 const DEPLOYMENT_DETAILS = {
-  platform: 'Vercel',
-  domain: 'archiai.thbz.in',
-  // Optionally, you can inject these at build time via env vars or CI
-  buildTime: new Date().toLocaleString(),
-  commit: process.env.GIT_COMMIT || 'N/A',
+  platform: process.env.VITE_DEPLOYMENT_PLATFORM || 'N/A',
+  domain: process.env.VITE_DEPLOYMENT_DOMAIN || 'N/A',
+  buildTime: process.env.VITE_BUILD_TIME || 'N/A',
+  commit: process.env.VITE_GIT_COMMIT || 'N/A',
 };
 
 const Footer: React.FC = () => {
@@ -60,7 +59,7 @@ const Footer: React.FC = () => {
                 </button>
                 {/* Tooltip/Popover */}
                 {showDetails && (
-                  <div className="absolute right-0 top-8 z-50 bg-gray-900 border border-gray-700 rounded-lg shadow-lg p-4 text-xs text-gray-200 min-w-[220px] animate-fade-in">
+                  <div className="absolute right-0 bottom-full mb-2 z-50 bg-gray-900 border border-gray-700 rounded-lg shadow-lg p-4 text-xs text-gray-200 min-w-[220px] animate-fade-in">
                     <div className="font-bold text-blue-400 mb-1">Deployment Details</div>
                     <div><span className="font-semibold">Platform:</span> {DEPLOYMENT_DETAILS.platform}</div>
                     <div><span className="font-semibold">Domain:</span> {DEPLOYMENT_DETAILS.domain}</div>
