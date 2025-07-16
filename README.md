@@ -27,35 +27,47 @@ An intelligent assistant that helps you design software architectures. Describe 
 ## ⚡ Setup Instructions
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/your-username/ai-software-architect.git
    cd ai-software-architect
    ```
+
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
+
 3. **Set up your Gemini API key**
    - Obtain a Google Gemini API key from [Google AI Studio](https://ai.google.dev/gemini-api/docs).
    - Create a `.env.local` file in the root directory.
    - Add your API key:
+
      ```env
      GEMINI_API_KEY=your_google_gemini_api_key
      ```
+
 4. **Run the app locally**
+
    ```bash
    npm run dev
    ```
+
    - The app will be available at [http://localhost:5173](http://localhost:5173) (default Vite port).
 5. **Build for production**
+
    ```bash
    npm run build
    ```
+
    - The production-ready files will be in the `dist/` directory.
 6. **Preview the production build**
+
    ```bash
    npm run preview
    ```
+
    - This serves the built app locally for final testing.
 
 ---
@@ -92,27 +104,33 @@ An intelligent assistant that helps you design software architectures. Describe 
 ## 📝 Usage
 
 ### 1. **Clone the repository**
+
 ```bash
 git clone https://github.com/your-username/ai-software-architect.git
 cd ai-software-architect
 ```
 
 ### 2. **Install dependencies**
+
 ```bash
 npm install
 ```
 
 ### 3. **Set up your Gemini API key**
+
 - Create a `.env.local` file in the root directory.
 - Add your Gemini API key:
+
   ```env
   GEMINI_API_KEY=your_google_gemini_api_key
   ```
 
 ### 4. **Run the app locally**
+
 ```bash
 npm run dev
 ```
+
 - The app will be available at `http://localhost:5173` (default Vite port).
 
 ---
@@ -148,15 +166,7 @@ npm run dev
 
 ## 🖼️ Mermaid Diagram Example
 
-The app generates diagrams like:
-
-```
-graph TD;
-  User-->Frontend;
-  Frontend-->API_Gateway;
-  API_Gateway-->AuthService;
-  API_Gateway-->ProductService;
-```
+The app generates Mermaid diagram code that can be rendered by any Mermaid.js-compatible viewer.
 
 ---
 
@@ -189,17 +199,5 @@ MIT License. See [LICENSE](LICENSE) for details.
 ---
 
 <div align="center">
-
----
-
-### 🚀 Powered by <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Google_Gemini_logo.svg" alt="Gemini" width="24" style="vertical-align:middle;"/> Google Gemini &nbsp;|&nbsp; ⚛️ React &nbsp;|&nbsp; ⚡ Vite &nbsp;|&nbsp; 💨 Tailwind CSS &nbsp;|&nbsp; 🧜‍♂️ Mermaid.js
-
-**Powered by Google Gemini. Designs are suggestions and should be reviewed by human experts.**
-
-**Tech Stack:** React, Vite, Tailwind CSS, Mermaid.js, Google Gemini
-
----
-
 Made with ❤️ for architects and builders.
-
 </div>
