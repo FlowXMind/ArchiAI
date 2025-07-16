@@ -1,6 +1,4 @@
 {
-  "name": "AI Software Architect",
-  "description": "An intelligent assistant that helps you design software architectures. Describe your project, select an architectural style, and get AI-powered recommendations for technology stacks, diagrams, and key considerations.",
-  "requestFramePermissions": [],
-  "prompt": ""
+  "name": "ArchiAi",
+  "description": "An AI-powered tool that generates detailed software architecture plans, technology stack recommendations, and Product Requirements Documents (PRDs) based on your project idea. Visualize the architecture, review cost estimates, and export your PRD with a single click."
 }

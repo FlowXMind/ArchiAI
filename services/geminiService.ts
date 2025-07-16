@@ -1,67 +1,170 @@
+import { GoogleGenAI, Type } from "@google/genai";
+import { ArchitectureData } from '../types';
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { ArchitectureResponse, ArchitectureType } from '../types';
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-if (!apiKey) {
-    throw new Error("VITE_GEMINI_API_KEY environment variable not set");
-}
-
-const genAI = new GoogleGenerativeAI(apiKey);
-
-const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash",
-});
-
-const generationConfig = {
-  temperature: 1,
-  topP: 0.95,
-  topK: 64,
-  maxOutputTokens: 8192,
-  responseMimeType: "text/plain",
+const responseSchema = {
+    type: Type.OBJECT,
+    properties: {
+        projectName: { type: Type.STRING },
+        projectSummary: { type: Type.STRING },
+        architecture: {
+            type: Type.OBJECT,
+            properties: {
+                overview: { type: Type.STRING },
+                frontend: {
+                    type: Type.OBJECT,
+                    properties: {
+                        techStack: { type: Type.ARRAY, items: { type: Type.STRING } },
+                        description: { type: Type.STRING },
+                    },
+                    required: ['techStack', 'description']
+                },
+                backend: {
+                    type: Type.OBJECT,
+                    properties: {
+                        techStack: { type: Type.ARRAY, items: { type: Type.STRING } },
+                        description: { type: Type.STRING },
+                    },
+                    required: ['techStack', 'description']
+                },
+                database: {
+                    type: Type.OBJECT,
+                    properties: {
+                        techStack: { type: Type.ARRAY, items: { type: Type.STRING } },
+                        description: { type: Type.STRING },
+                    },
+                    required: ['techStack', 'description']
+                },
+                deployment: {
+                    type: Type.OBJECT,
+                    properties: {
+                        techStack: { type: Type.ARRAY, items: { type: Type.STRING } },
+                        description: { type: Type.STRING },
+                    },
+                    required: ['techStack', 'description']
+                },
+            },
+            required: ['overview', 'frontend', 'backend', 'database', 'deployment']
+        },
+        scalability: {
+            type: Type.OBJECT,
+            properties: {
+                title: { type: Type.STRING },
+                points: { type: Type.ARRAY, items: { type: Type.STRING } },
+            },
+            required: ['title', 'points']
+        },
+        security: {
+            type: Type.OBJECT,
+            properties: {
+                title: { type: Type.STRING },
+                points: { type: Type.ARRAY, items: { type: Type.STRING } },
+            },
+            required: ['title', 'points']
+        },
+        costEstimation: {
+            type: Type.OBJECT,
+            properties: {
+                title: { type: Type.STRING },
+                breakdown: {
+                    type: Type.ARRAY,
+                    items: {
+                        type: Type.OBJECT,
+                        properties: {
+                            category: { type: Type.STRING },
+                            cost: { type: Type.NUMBER },
+                            details: { type: Type.STRING },
+                        },
+                        required: ['category', 'cost', 'details']
+                    },
+                },
+            },
+            required: ['title', 'breakdown']
+        },
+        roadmap: {
+            type: Type.ARRAY,
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    phase: { type: Type.STRING },
+                    duration: { type: Type.STRING },
+                    tasks: { type: Type.ARRAY, items: { type: Type.STRING } },
+                },
+                required: ['phase', 'duration', 'tasks']
+            },
+        },
+        prd: {
+            type: Type.OBJECT,
+            properties: {
+                introduction: { type: Type.STRING },
+                userPersonas: {
+                    type: Type.ARRAY,
+                    items: {
+                        type: Type.OBJECT,
+                        properties: {
+                            name: { type: Type.STRING },
+                            description: { type: Type.STRING },
+                        },
+                        required: ['name', 'description']
+                    }
+                },
+                features: {
+                    type: Type.ARRAY,
+                    items: {
+                        type: Type.OBJECT,
+                        properties: {
+                            title: { type: Type.STRING },
+                            description: { type: Type.STRING },
+                            userStories: { type: Type.ARRAY, items: { type: Type.STRING } },
+                        },
+                        required: ['title', 'description', 'userStories']
+                    }
+                },
+                nonFunctionalRequirements: {
+                    type: Type.ARRAY,
+                    items: {
+                        type: Type.OBJECT,
+                        properties: {
+                            type: { type: Type.STRING },
+                            details: { type: Type.STRING },
+                        },
+                        required: ['type', 'details']
+                    }
+                },
+            },
+            required: ['introduction', 'userPersonas', 'features', 'nonFunctionalRequirements']
+        },
+    },
+    required: ['projectName', 'projectSummary', 'architecture', 'scalability', 'security', 'costEstimation', 'roadmap', 'prd'],
 };
 
-
-export const generateArchitecturePlan = async (
-    projectDescription: string,
-    architectureType: ArchitectureType
-): Promise<ArchitectureResponse> => {
-    const prompt = `
-        As an expert software architect, create a detailed architectural plan for the following project.
-        The user has specified an interest in a "${architectureType}" architecture.
-        Your analysis should be comprehensive, practical, and tailored to the project description.
-
-        Project Description: "${projectDescription}"
-
-        Please generate a response in a clean, stringified JSON format. The Mermaid diagram should be valid and represent the core components and data flow.
-    `;
-
+export const generateArchitecturePlan = async (projectDescription: string): Promise<ArchitectureData> => {
     try {
-        const result = await model.generateContent(prompt);
-        const responseText = result.response.text();
-        
-        // Clean the response text by removing markdown backticks and "json" identifier
-        const cleanedText = responseText.replace(/```json\n|```/g, '').trim();
+        const result = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: `Based on the following project description, generate a comprehensive software architecture plan and a detailed Product Requirements Document (PRD).
 
-        const parsedData: ArchitectureResponse = JSON.parse(cleanedText);
+            Project Description: "${projectDescription}"
 
-        // Basic validation
-        if (!parsedData.overview || !parsedData.techStack || !parsedData.diagram) {
-             throw new Error("AI response is missing required fields.");
-        }
+            Provide a professional and detailed analysis covering architecture (frontend, backend, database, deployment), scalability, security best practices, a monthly cost estimation, a project roadmap, and the full PRD. Ensure all fields in the JSON schema are populated with high-quality, relevant information. For cost, provide realistic monthly estimates in USD.`,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: responseSchema,
+                temperature: 0.3,
+            }
+        });
 
-        return parsedData;
+        const jsonText = result.text.trim();
+        const parsedData = JSON.parse(jsonText);
+
+        return parsedData as ArchitectureData;
 
     } catch (error) {
-        console.error("Error generating architecture plan from Gemini API:", error);
-        if (error instanceof Error) {
-            if (error.message.includes("SAFETY")) {
-                throw new Error("The request was blocked due to safety settings. Please modify your project description.");
-            }
-            if (error.message.includes("JSON")) {
-                throw new Error("Failed to parse the AI's response. The format was invalid.");
-            }
+        console.error("Error generating architecture plan:", error);
+        if (error instanceof Error && error.message.includes('JSON')) {
+             throw new Error("Failed to parse the AI's response. The data format might be invalid. Please try again.");
         }
-        throw new Error("Failed to get a valid response from the AI. Please try again.");
+        throw new Error("An error occurred while communicating with the AI. Please check your connection and API key.");
     }
 };

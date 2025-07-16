@@ -1,5 +1,5 @@
 {
-  "name": "ai-software-architect",
+  "name": "archiai",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,15 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "react-dom": "^18.2.0",
+    "react": "^18.2.0",
     "@google/genai": "^1.9.0",
-    "@google/generative-ai": "^0.24.1",
-    "html2pdf.js": "^0.10.3",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "recharts": "2.12.7"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
-    "@types/react": "^19.1.8",
     "typescript": "~5.7.2",
     "vite": "^6.2.0"
   }

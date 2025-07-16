@@ -7,6 +7,7 @@ import { ChartBarIcon, DiagramIcon, DocumentTextIcon, LightBulbIcon, ShieldCheck
 import { CheckCircleIcon, XCircleIcon } from './icons/ProConIcons';
 import html2pdf from 'html2pdf.js';
 import { useRef } from 'react';
+import ErrorBoundary from './ErrorBoundary';
 
 interface ArchitectureOutputProps {
   data: ArchitectureResponse | null;
@@ -14,7 +15,7 @@ interface ArchitectureOutputProps {
   error: string | null;
 }
 
-type Tab = 'Overview' | 'Diagram' | 'Tech Stack' | 'Pros & Cons' | 'Considerations';
+type Tab = 'Overview' | 'Diagram' | 'Tech Stack' | 'Pros & Cons' | 'Considerations' | 'Components' | 'Implementation';
 
 const TechStackPill: React.FC<{ tech: string }> = ({ tech }) => (
     <span className="inline-block bg-sky-400/10 border border-sky-400/20 rounded-full px-3 py-1 text-sm font-medium text-sky-300 mr-2 mb-2">
@@ -52,6 +53,17 @@ function formatArchitectureAsText(data: ArchitectureResponse): string {
   data.cons.forEach((con, i) => { txt += `  ${i+1}. ${con}\n`; });
   txt += `\nScalability\n${data.scalability}\n\n`;
   txt += `Security\n${data.security}\n\n`;
+  txt += `Detailed Components\n`;
+  data.detailedComponents.forEach(c => {
+    txt += `  - ${c.name}: ${c.description}\n`;
+    txt += `    Responsibilities: ${c.responsibilities.join(', ')}\n`;
+    txt += `    Interactions: ${c.interactions.join(', ')}\n`;
+  });
+  txt += `\nImplementation Steps\n`;
+  data.implementationSteps.forEach((step, i) => { txt += `  ${i+1}. ${step}\n`; });
+  txt += `\nDeployment Strategy\n${data.deploymentStrategy}\n\n`;
+  txt += `Monitoring and Logging\n${data.monitoringAndLogging}\n\n`;
+  txt += `Cost Estimation\n${data.costEstimation}\n\n`;
   txt += `Mermaid Diagram\n${data.diagram}\n`;
   return txt;
 }
@@ -74,6 +86,18 @@ function formatArchitectureAsMarkdown(data: ArchitectureResponse): string {
   data.cons.forEach((con, i) => { md += `- ${con}\n`; });
   md += `\n## Scalability\n${data.scalability}\n\n`;
   md += `## Security\n${data.security}\n\n`;
+  md += `## Detailed Components\n`;
+  data.detailedComponents.forEach(c => {
+    md += `### ${c.name}\n- **Description:** ${c.description}\n- **Responsibilities:**\n`;
+    c.responsibilities.forEach(r => { md += `  - ${r}\n`; });
+    md += `- **Interactions:**\n`;
+    c.interactions.forEach(i => { md += `  - ${i}\n`; });
+  });
+  md += `\n## Implementation Steps\n`;
+  data.implementationSteps.forEach((step, i) => { md += `${i+1}. ${step}\n`; });
+  md += `\n## Deployment Strategy\n${data.deploymentStrategy}\n\n`;
+  md += `## Monitoring and Logging\n${data.monitoringAndLogging}\n\n`;
+  md += `## Cost Estimation\n${data.costEstimation}\n\n`;
   md += `## Mermaid Diagram\n\n\`\`\`mermaid\n${data.diagram}\`\`\`\n\n`;
   return md;
 }
@@ -159,14 +183,76 @@ export const ArchitectureOutput: React.FC<ArchitectureOutputProps> = ({ data, is
       case 'Considerations':
         return (
             <div className="space-y-8">
-                <div>
-                    <h3 className="text-2xl font-bold text-sky-300 mb-3">Scalability</h3>
-                    <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">{data.scalability}</p>
-                </div>
-                <div>
-                    <h3 className="text-2xl font-bold text-sky-300 mb-3">Security</h3>
-                    <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">{data.security}</p>
-                </div>
+                <ErrorBoundary>
+                    <div>
+                        <h3 className="text-2xl font-bold text-sky-300 mb-3">Scalability</h3>
+                        <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">
+                            {typeof data.scalability === 'string' ? data.scalability : 'Scalability information not available.'}
+                        </p>
+                    </div>
+                </ErrorBoundary>
+                <ErrorBoundary>
+                    <div>
+                        <h3 className="text-2xl font-bold text-sky-300 mb-3">Security</h3>
+                        <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">
+                            {typeof data.security === 'string' ? data.security : 'Security information not available.'}
+                        </p>
+                    </div>
+                </ErrorBoundary>
+                <ErrorBoundary>
+                    <div>
+                        <h3 className="text-2xl font-bold text-sky-300 mb-3">Deployment Strategy</h3>
+                        <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">
+                            {typeof data.deploymentStrategy === 'string' ? data.deploymentStrategy : 'Deployment strategy not available.'}
+                        </p>
+                    </div>
+                </ErrorBoundary>
+                <ErrorBoundary>
+                    <div>
+                        <h3 className="text-2xl font-bold text-sky-300 mb-3">Monitoring & Logging</h3>
+                        <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">
+                            {typeof data.monitoringAndLogging === 'string' ? data.monitoringAndLogging : 'Monitoring and logging information not available.'}
+                        </p>
+                    </div>
+                </ErrorBoundary>
+                <ErrorBoundary>
+                    <div>
+                        <h3 className="text-2xl font-bold text-sky-300 mb-3">Cost Estimation</h3>
+                        <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">
+                            {typeof data.costEstimation === 'string' ? data.costEstimation : 'Cost estimation not available.'}
+                        </p>
+                    </div>
+                </ErrorBoundary>
+            </div>
+        );
+      case 'Components':
+        return (
+            <div className="space-y-6">
+                {data.detailedComponents.map((component, index) => (
+                    <div key={index} className="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                        <h4 className="text-xl font-bold text-sky-300 mb-2">{component.name}</h4>
+                        <p className="text-slate-300 mb-3">{component.description}</p>
+                        <h5 className="font-semibold text-slate-200 mb-2">Responsibilities:</h5>
+                        <ul className="list-disc list-inside space-y-1 text-slate-400">
+                            {component.responsibilities.map((resp, i) => <li key={i}>{resp}</li>)}
+                        </ul>
+                        <h5 className="font-semibold text-slate-200 mt-3 mb-2">Interactions:</h5>
+                        <ul className="list-disc list-inside space-y-1 text-slate-400">
+                            {component.interactions.map((inter, i) => <li key={i}>{inter}</li>)}
+                        </ul>
+                    </div>
+                ))}
+            </div>
+        );
+      case 'Implementation':
+        return (
+            <div>
+                <h3 className="text-2xl font-bold text-sky-300 mb-4">Implementation Steps</h3>
+                <ol className="list-decimal list-inside space-y-3 text-slate-300">
+                    {data.implementationSteps.map((step, index) => (
+                        <li key={index} className="pl-2">{step}</li>
+                    ))}
+                </ol>
             </div>
         );
       default:
@@ -277,12 +363,14 @@ export const ArchitectureOutput: React.FC<ArchitectureOutputProps> = ({ data, is
           </div>
         </div>
       )}
-      <div className="flex border-b border-slate-700/60 px-2 sm:px-4 space-x-1 sm:space-x-2">
+      <div className="flex flex-wrap border-b border-slate-700/60 px-2 sm:px-4">
         <TabButton Icon={DocumentTextIcon} label="Overview" isActive={activeTab === 'Overview'} onClick={() => setActiveTab('Overview')} disabled={!data}/>
         <TabButton Icon={DiagramIcon} label="Diagram" isActive={activeTab === 'Diagram'} onClick={() => setActiveTab('Diagram')} disabled={!data}/>
         <TabButton Icon={ChartBarIcon} label="Tech Stack" isActive={activeTab === 'Tech Stack'} onClick={() => setActiveTab('Tech Stack')} disabled={!data}/>
         <TabButton Icon={LightBulbIcon} label="Pros & Cons" isActive={activeTab === 'Pros & Cons'} onClick={() => setActiveTab('Pros & Cons')} disabled={!data}/>
         <TabButton Icon={ShieldCheckIcon} label="Considerations" isActive={activeTab === 'Considerations'} onClick={() => setActiveTab('Considerations')} disabled={!data}/>
+        <TabButton Icon={ShieldCheckIcon} label="Components" isActive={activeTab === 'Components'} onClick={() => setActiveTab('Components')} disabled={!data}/>
+        <TabButton Icon={ChartBarIcon} label="Implementation" isActive={activeTab === 'Implementation'} onClick={() => setActiveTab('Implementation')} disabled={!data}/>
       </div>
       <div className="p-6 sm:p-8 flex-grow overflow-y-auto transition-opacity duration-500" style={{ opacity: isLoading ? 0.5 : 1 }}>
         {renderContent()}
