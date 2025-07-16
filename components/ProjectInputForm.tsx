@@ -24,20 +24,6 @@ const ProjectInputForm: React.FC<ProjectInputFormProps> = ({ onGenerate }) => {
 
   return (
     <div className="max-w-4xl mx-auto my-12 text-center">
-      <h1 className="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 mb-4 tracking-tight animate-gradient-text">
-        ArchiAi
-      </h1>
-      <style>{`
-        @keyframes animate-gradient-text {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        .animate-gradient-text {
-          background-size: 200% auto;
-          animation: animate-gradient-text 5s ease-in-out infinite;
-        }
-      `}</style>
       <p className="text-lg md:text-xl text-gray-400 mb-10">
         Turn your idea into a launch-ready plan. Describe your vision and get a detailed architecture, PRD, and roadmap in seconds.
       </p>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { CostEstimation } from '../types';
+import { CostEstimation, ChartDataItem } from '../types';
 import Card from './common/Card';
 
 interface CostEstimationChartProps {
@@ -67,13 +67,23 @@ const CostEstimationChart: React.FC<CostEstimationChartProps> = ({ costEstimatio
               dataKey="value"
               nameKey="name"
             >
-              {chartData.map((entry, index) => (
+              {chartData.map((_: ChartDataItem, index: number) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
           </PieChart>
         </ResponsiveContainer>
       </div>
+      {costEstimation.freeAlternatives && costEstimation.freeAlternatives.length > 0 && (
+        <div className="mt-4 p-4 bg-gray-800 rounded-lg text-gray-300 text-sm border border-gray-700">
+          <h4 className="font-semibold text-white mb-2">Free/Open-Source Alternatives:</h4>
+          <ul className="list-disc list-inside space-y-1">
+            {costEstimation.freeAlternatives.map((alt, index) => (
+              <li key={index}>{alt}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </Card>
   );
 };

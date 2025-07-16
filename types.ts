@@ -33,6 +33,13 @@ export interface CostBreakdown {
 export interface CostEstimation {
   title: string;
   breakdown: CostBreakdown[];
+  freeAlternatives?: string[]; // New field for free alternatives
+}
+
+export interface ChartDataItem {
+  name: string;
+  value: number;
+  details: string;
 }
 
 export interface RoadmapPhase {

@@ -6,7 +6,6 @@ import Dashboard from './components/Dashboard';
 import PrdDisplay from './components/PrdDisplay';
 import Loader from './components/common/Loader';
 import Header from './components/Header';
-import Nav from './components/Nav';
 import Footer from './components/Footer';
 import BackgroundAnimation from './components/common/BackgroundAnimation';
 
@@ -57,8 +56,13 @@ const App: React.FC = () => {
   return (
     <div className={`min-h-screen bg-black text-gray-200 transition-opacity duration-1000 flex flex-col relative ${isMounted ? 'opacity-100' : 'opacity-0'}`}>
       <BackgroundAnimation />
-      <Header onReset={resetApp} hasData={!!apiResponse} />
-      <main className="relative z-10 w-full flex-grow p-4 sm:p-6 lg:p-8 max-w-8xl mx-auto">
+      <Header
+        onReset={resetApp}
+        hasData={!!apiResponse}
+        currentView={currentView}
+        setCurrentView={setCurrentView}
+      />
+      <main className="relative z-10 w-full flex-grow p-4 sm:p-6 lg:p-8 max-w-8xl mx-auto mt-[3.5rem] mb-[0rem]">
         {!apiResponse && !isLoading && !error && (
           <ProjectInputForm onGenerate={handleGenerate} />
         )}
@@ -84,7 +88,6 @@ const App: React.FC = () => {
               <h1 className="text-4xl font-extrabold tracking-tight text-white mb-1">{apiResponse.projectName}</h1>
               <p className="text-lg text-gray-400">{apiResponse.projectSummary}</p>
             </div>
-            <Nav currentView={currentView} setCurrentView={setCurrentView} />
             <div className="mt-6">
               {currentView === 'dashboard' && <Dashboard data={apiResponse} />}
               {currentView === 'prd' && <PrdDisplay prd={apiResponse.prd} projectName={apiResponse.projectName} />}
