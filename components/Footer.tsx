@@ -26,7 +26,7 @@ const Footer: React.FC = () => {
             <div className="text-xs text-gray-500 text-center sm:text-right">
                 © {new Date().getFullYear()} Tony Sebastian (THBZ). All rights reserved.<br />
                 <span className="text-[10px] text-gray-600">
-                    Built with React, Gemini & ❤️
+                    Built with React, TypeScript, Tailwind, Gemini, Recharts & ❤️
                 </span>
             </div>
         </div>
