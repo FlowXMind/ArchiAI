@@ -24,7 +24,6 @@ const renderLegend = (props: any) => {
     );
 };
 
-
 const CostEstimationChart: React.FC<CostEstimationChartProps> = ({ costEstimation }) => {
   if (!costEstimation || !costEstimation.breakdown || costEstimation.breakdown.length === 0) {
     return (
@@ -43,6 +42,21 @@ const CostEstimationChart: React.FC<CostEstimationChartProps> = ({ costEstimatio
   
   const totalCost = chartData.reduce((sum, item) => sum + item.value, 0);
 
+  // Custom tooltip to show details only
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const item = payload[0].payload;
+      return (
+        <div className="bg-gray-900 border border-gray-700 rounded-lg p-3 text-xs text-gray-200 min-w-[180px]">
+          <div className="font-bold text-blue-400 mb-1">{item.name}</div>
+          <div><span className="font-semibold">Details:</span> {item.details}</div>
+          <div><span className="font-semibold">Cost:</span> ${item.value.toLocaleString()}</div>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <Card className="h-full flex flex-col">
       <h3 className="text-2xl font-bold text-white mb-1">{costEstimation.title}</h3>
@@ -50,12 +64,7 @@ const CostEstimationChart: React.FC<CostEstimationChartProps> = ({ costEstimatio
       <div className="flex-grow h-64">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
-            <Tooltip
-                contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '0.5rem' }}
-                labelStyle={{ color: '#f3f4f6' }}
-                itemStyle={{ color: '#d1d5db' }}
-            />
-            {/* Use custom legend component */}
+            <Tooltip content={<CustomTooltip />} />
             <Legend content={renderLegend} verticalAlign="bottom" />
             <Pie
               data={chartData}
@@ -74,16 +83,6 @@ const CostEstimationChart: React.FC<CostEstimationChartProps> = ({ costEstimatio
           </PieChart>
         </ResponsiveContainer>
       </div>
-      {costEstimation.freeAlternatives && costEstimation.freeAlternatives.length > 0 && (
-        <div className="mt-4 p-4 bg-gray-800 rounded-lg text-gray-300 text-sm border border-gray-700">
-          <h4 className="font-semibold text-white mb-2">Free/Open-Source Alternatives:</h4>
-          <ul className="list-disc list-inside space-y-1">
-            {costEstimation.freeAlternatives.map((alt, index) => (
-              <li key={index}>{alt}</li>
-            ))}
-          </ul>
-        </div>
-      )}
     </Card>
   );
 };
